@@ -7,19 +7,23 @@ package cmd
 import (
 	"fmt"
 	"github.com/mitchellh/go-homedir"
+	"gorm.io/gorm"
 	"os"
+	"rock-rocket/internal/db"
+	"rock-rocket/internal/rock_rocket"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 var (
-	cfgFile string
+	cfgFile    string
+	rockRocket *rock_rocket.RockRocket
 )
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "rock-rocket",
+	Use:   "rock_rocket",
 	Short: "Rock-Rocket 是一个支持命令行和本地网页查询企业信息的工具库",
 	Long: `Rock-Rocket 作为一个企业查询工具，支持如下功能：
 1. 支持命令行根据企业名称、统一社会信用码、法人名字、注册地址等条件查询企业信息
@@ -40,13 +44,13 @@ func Execute(version string) {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
+	cobra.OnInitialize(initConfig, initRockRocket)
 
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.rock-rocket.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.rock_rocket.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -66,9 +70,9 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".rock-rocket" (without extension).
+		// Search config in home directory with name ".rock_rocket" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".rock-rocket")
+		viper.SetConfigName(".rock_rocket")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
@@ -77,4 +81,17 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Println("Using config file:", viper.ConfigFileUsed())
 	}
+
+}
+
+func initRockRocket() {
+	driverName := viper.GetString("driverName")
+	dsn := viper.GetString("dsn")
+
+	if err := db.Initial(dsn, driverName, &gorm.Config{}); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	rockRocket = rock_rocket.NewRockRocket(db.DB())
 }

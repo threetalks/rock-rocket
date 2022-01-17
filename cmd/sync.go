@@ -1,5 +1,5 @@
 /*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
+Copyright © 2022 Three Talks  <bytebody@icloud.com>
 
 */
 package cmd
@@ -16,7 +16,7 @@ var syncCmd = &cobra.Command{
 	Short: "Rock-Rocket 企业数据同步",
 	Long: `企业数据同步：支持 https、http 远程和本地json、csv 文件同步
 1. 同步根据文件后缀判定文件类型
-2. 远程同步需要添加服务器地址 比如: https://cos.rock-rocket.com/2022-01-01.csv
+2. 远程同步需要添加服务器地址 比如: https://cos.rock_rocket.com/2022-01-01.csv
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("sync in todo")
@@ -25,14 +25,5 @@ var syncCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(syncCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// syncCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	syncCmd.Flags().StringP("file", "f", "rock-rocket.csv", "同步文件路径")
+	syncCmd.Flags().StringP("file", "f", "rock_rocket.csv", "同步文件路径")
 }

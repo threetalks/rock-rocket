@@ -1,4 +1,4 @@
-package company
+package rock_rocket
 
 import "testing"
 
